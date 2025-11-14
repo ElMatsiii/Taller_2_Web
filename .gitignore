@@ -6,3 +6,16 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+# Ignora TODAS las carpetas node_modules en cualquier parte
+**/node_modules/
+
+# Archivos de caché de Python
+**/__pycache__/
+*.pyc
+
+# Archivos de IDE (como WebStorm)
+.idea/
+
+# Archivos de entorno
+.env
+*.db
