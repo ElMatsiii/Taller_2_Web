@@ -1,26 +1,18 @@
 # api_fastapi/init_db.py
-#
-# Este script se ejecuta UNA SOLA VEZ para crear y poblar
-# la base de datos 'ghibli.db' con datos de ejemplo.
-#
-# Ejecútalo con: python init_db.py
-# ----------------------------------------------------
-
 import sqlite3
 import os
 
 DB_FILE = './ghibli.db'
 
-# Definimos el SQL completo (CREATE e INSERT)
 SQL_INIT = """
--- Borramos las tablas si ya existen (para poder re-ejecutar)
+-- Borramos las tablas si ya existen
 DROP TABLE IF EXISTS peliculas;
 DROP TABLE IF EXISTS idx_peliculas_titulo;
 DROP TABLE IF EXISTS idx_peliculas_anio;
 
--- 1. CREAR TABLA PELICULAS (Sintaxis SQLite)
+-- 1. CREAR TABLA PELICULAS
 CREATE TABLE peliculas (
-    id TEXT PRIMARY KEY,                 -- <- CAMBIO: VARCHAR(100) a TEXT
+    id TEXT PRIMARY KEY,
     titulo TEXT NOT NULL,
     titulo_original TEXT,
     director TEXT,
@@ -29,12 +21,12 @@ CREATE TABLE peliculas (
     duracion INTEGER,
     descripcion TEXT,
     imagen_url TEXT,
-    calificacion REAL,                   -- <- CAMBIO: DECIMAL(3,1) a REAL
+    calificacion REAL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. INSERTAR PELÍCULAS (Sin cambios)
-INSERT INTO peliculas VALUES
+-- 2. INSERTAR PELÍCULAS (especificando columnas)
+INSERT INTO peliculas (id, titulo, titulo_original, director, productor, anio_lanzamiento, duracion, descripcion, imagen_url, calificacion) VALUES
 ('2baf70d1-42bb-4437-b551-e5fed5a87abe', 'El Castillo en el Cielo', 'Tenkū no Shiro Rapyuta',
  'Hayao Miyazaki', 'Isao Takahata', 1986, 124,
  'Una joven con un cristal mágico y un chico minero se embarcan en una aventura épica para encontrar Laputa, una legendaria ciudad flotante.',
@@ -60,37 +52,32 @@ INSERT INTO peliculas VALUES
  'Una joven es transformada en anciana por una bruja y busca refugio en un castillo mágico que camina.',
  'https://image.tmdb.org/t/p/w600_and_h900_bestv2/TkTPELWinKaWO3YCPvP1mprYHj.jpg', 8.7);
 
--- 3. CREAR ÍNDICES (Sin cambios)
+-- 3. CREAR ÍNDICES
 CREATE INDEX idx_peliculas_titulo ON peliculas(titulo);
 CREATE INDEX idx_peliculas_anio ON peliculas(anio_lanzamiento);
 """
 
-# Función para ejecutar el script
 def initialize_database():
     try:
-        # Borra la DB anterior si existe, para empezar limpio
         if os.path.exists(DB_FILE):
             os.remove(DB_FILE)
             print(f"Base de datos '{DB_FILE}' anterior eliminada.")
 
         print(f"Conectando y creando la base de datos '{DB_FILE}'...")
-        # Conecta a la base de datos (la crea si no existe)
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
         print("Ejecutando script de inicialización SQL...")
-        # .executescript() permite ejecutar múltiples sentencias SQL a la vez
         cursor.executescript(SQL_INIT)
 
         conn.commit()
-        print(f"Base de datos '{DB_FILE}' creada y poblada exitosamente.")
+        print(f"✅ Base de datos '{DB_FILE}' creada y poblada exitosamente.")
 
     except sqlite3.Error as e:
-        print(f"Error al inicializar la base de datos: {e}")
+        print(f"❌ Error al inicializar la base de datos: {e}")
     finally:
         if conn:
             conn.close()
 
-# Ejecutar la función
 if __name__ == "__main__":
     initialize_database()

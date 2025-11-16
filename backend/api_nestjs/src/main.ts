@@ -2,21 +2,28 @@
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common'; // <-- 1. Importar
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    // --- 2. Añadir esta línea ---
+    // ← AGREGAR CORS
+    app.enableCors({
+        origin: '*', // Permite todos los orígenes
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        credentials: true,
+    });
+
+    // Validación global
     app.useGlobalPipes(
         new ValidationPipe({
-            whitelist: true, // Ignora campos que NO estén en el DTO
-            forbidNonWhitelisted: true, // Lanza error si hay campos no permitidos
-            transform: true, // Transforma el payload al tipo del DTO
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            transform: true,
         }),
     );
-    // --------------------------
 
-    await app.listen(3000); // Puedes cambiar el puerto si lo deseas
+    await app.listen(3000);
+    console.log('🚀 NestJS API corriendo en http://localhost:3000');
 }
 bootstrap();
