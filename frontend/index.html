@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; media-src *; img-src 'self' data: content: https:; connect-src *;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; media-src *; img-src 'self' data: content: https:; connect-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;">
     <title>InfoMóvil - Taller 2</title>
     
     <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     
     <!-- Lucide Icons CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        /* Solo animaciones necesarias que Tailwind no incluye por defecto */
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -22,12 +21,10 @@
             animation: spin 1s linear infinite;
         }
         
-        /* Smooth scroll */
         html {
             scroll-behavior: smooth;
         }
         
-        /* Personalización de scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -50,14 +47,12 @@
     <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-40">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold">InfoMóvil</h1>
+                <h1 class="text-2xl font-bold">InfoMóvil - Grupo 10</h1>
                 
-                <!-- Mobile menu button -->
                 <button id="mobile-menu-btn" class="md:hidden focus:outline-none">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
 
-                <!-- Desktop navigation -->
                 <nav id="desktop-nav" class="hidden md:flex gap-4">
                     <button onclick="switchTab('recetas')" id="tab-recetas" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-indigo-700">
                         <i data-lucide="chef-hat" class="w-5 h-5"></i>
@@ -67,10 +62,13 @@
                         <i data-lucide="users" class="w-5 h-5"></i>
                         Entrenadores
                     </button>
+                    <button onclick="switchTab('ghibli')" id="tab-ghibli" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg transition-colors hover:bg-indigo-500">
+                        <i data-lucide="film" class="w-5 h-5"></i>
+                        Ghibli
+                    </button>
                 </nav>
             </div>
 
-            <!-- Mobile navigation -->
             <nav id="mobile-nav" class="hidden md:hidden mt-4 space-y-2">
                 <button onclick="switchTab('recetas'); toggleMobileMenu();" class="tab-btn-mobile w-full flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-indigo-700">
                     <i data-lucide="chef-hat" class="w-5 h-5"></i>
@@ -80,11 +78,14 @@
                     <i data-lucide="users" class="w-5 h-5"></i>
                     Entrenadores
                 </button>
+                <button onclick="switchTab('ghibli'); toggleMobileMenu();" class="tab-btn-mobile w-full flex items-center gap-2 px-4 py-2 rounded-lg transition-colors hover:bg-indigo-500">
+                    <i data-lucide="film" class="w-5 h-5"></i>
+                    Ghibli
+                </button>
             </nav>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 py-6">
         
         <!-- Error Alert -->
@@ -100,12 +101,8 @@
             <i data-lucide="loader-2" class="animate-spin text-indigo-600 w-8 h-8"></i>
         </div>
 
-        <!-- ============================================ -->
-        <!-- SECCIÓN DE RECETAS -->
-        <!-- ============================================ -->
+        <!-- SECCIÓN DE RECETAS (Express API) -->
         <div id="recetas-view" class="space-y-4">
-            
-            <!-- Buscador -->
             <div class="relative">
                 <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none"></i>
                 <input 
@@ -116,30 +113,21 @@
                 >
             </div>
 
-            <!-- Grid de Recetas -->
             <div id="recetas-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Las recetas se cargarán aquí dinámicamente -->
             </div>
 
-            <!-- Mensaje sin resultados -->
             <div id="no-recetas" class="hidden text-center py-8 text-gray-500">
                 No se encontraron recetas
             </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- SECCIÓN DE ENTRENADORES -->
-        <!-- ============================================ -->
+        <!-- SECCIÓN DE ENTRENADORES (NestJS API) -->
         <div id="trainers-view" class="hidden space-y-6">
-            
-            <!-- Formulario para crear entrenador -->
             <div class="bg-white rounded-lg shadow-md p-6 transition-shadow duration-300 hover:shadow-xl">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">Nuevo Entrenador</h2>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Nombre
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                         <input
                             type="text"
                             id="trainer-name"
@@ -149,9 +137,7 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Equipo (separado por comas)
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Equipo (separado por comas)</label>
                         <input
                             type="text"
                             id="trainer-team"
@@ -169,14 +155,31 @@
                 </div>
             </div>
 
-            <!-- Grid de Entrenadores -->
             <div id="trainers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Los entrenadores se cargarán aquí dinámicamente -->
             </div>
 
-            <!-- Mensaje sin entrenadores -->
             <div id="no-trainers" class="hidden text-center py-8 text-gray-500">
                 No hay entrenadores registrados
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE GHIBLI (FastAPI) -->
+        <div id="ghibli-view" class="hidden space-y-4">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none"></i>
+                <input 
+                    type="text" 
+                    id="ghibli-search"
+                    placeholder="Buscar películas de Ghibli..."
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all duration-200"
+                >
+            </div>
+
+            <div id="ghibli-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+
+            <div id="no-ghibli" class="hidden text-center py-8 text-gray-500">
+                No se encontraron películas
             </div>
         </div>
 
@@ -187,13 +190,12 @@
         <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300">
             <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
                 <h2 id="modal-title" class="text-xl font-bold text-gray-800"></h2>
-                <button onclick="closeRecetaModal()" class="text-gray-500 hover:text-gray-700 focus:outline-none transition-colors duration-200">
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 focus:outline-none transition-colors duration-200">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
             
             <div id="modal-content" class="p-6 space-y-4">
-                <!-- El contenido se cargará dinámicamente -->
             </div>
         </div>
     </div>
@@ -203,16 +205,571 @@
         <div class="container mx-auto px-4 text-center">
             <p class="text-sm">Taller Nº2 - Intro. a Web Móvil | Grupo 10</p>
             <p class="text-xs text-gray-400 mt-2">
-                Express API (Puerto 3002) | NestJS API (Puerto 3000)
+                Express API: 3002 | NestJS API: 3000 | FastAPI: 3003
             </p>
         </div>
     </footer>
 
-    <!-- JavaScript -->
-    <script src="app.js"></script>
     <script>
-        // Inicializar los iconos de Lucide
-        lucide.createIcons();
+        // ============================================
+        // CONFIGURACIÓN DE APIs
+        // ============================================
+        const API_CONFIG = {
+            recetas: 'http://localhost:3002/api',
+            trainers: 'http://localhost:3000/trainers',
+            ghibli: 'http://localhost:3003'
+        };
+
+        // ============================================
+        // ESTADO GLOBAL
+        // ============================================
+        let currentTab = 'recetas';
+        let recetas = [];
+        let trainers = [];
+        let ghibliFilms = [];
+        let searchTimeout = null;
+
+        // ============================================
+        // UTILIDADES
+        // ============================================
+        function showError(message) {
+            const errorAlert = document.getElementById('error-alert');
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorAlert.classList.remove('hidden');
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            setTimeout(() => hideError(), 5000);
+        }
+
+        function hideError() {
+            document.getElementById('error-alert').classList.add('hidden');
+        }
+
+        function showLoading() {
+            document.getElementById('loading-spinner').classList.remove('hidden');
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-spinner').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.classList.toggle('hidden');
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // ============================================
+        // NAVEGACIÓN
+        // ============================================
+        function switchTab(tabName) {
+            currentTab = tabName;
+            hideError();
+            
+            document.getElementById('recetas-view').classList.add('hidden');
+            document.getElementById('trainers-view').classList.add('hidden');
+            document.getElementById('ghibli-view').classList.add('hidden');
+            
+            if (tabName === 'recetas') {
+                document.getElementById('recetas-view').classList.remove('hidden');
+                fetchRecetas();
+            } else if (tabName === 'trainers') {
+                document.getElementById('trainers-view').classList.remove('hidden');
+                fetchTrainers();
+            } else if (tabName === 'ghibli') {
+                document.getElementById('ghibli-view').classList.remove('hidden');
+                fetchGhibli();
+            }
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-700');
+                btn.classList.add('hover:bg-indigo-500');
+            });
+            document.getElementById(`tab-${tabName}`).classList.add('bg-indigo-700');
+            document.getElementById(`tab-${tabName}`).classList.remove('hover:bg-indigo-500');
+        }
+
+        // ============================================
+        // API DE RECETAS (Express)
+        // ============================================
+        async function fetchRecetas() {
+            showLoading();
+            hideError();
+            
+            try {
+                const searchTerm = document.getElementById('search-input').value;
+                const url = searchTerm 
+                    ? `${API_CONFIG.recetas}/recetas/search?s=${searchTerm}`
+                    : `${API_CONFIG.recetas}/recetas`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                recetas = data.meals || [];
+                
+                renderRecetas();
+            } catch (error) {
+                showError('Error al cargar recetas. Verifica que la API Express esté en puerto 3002.');
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderRecetas() {
+            const grid = document.getElementById('recetas-grid');
+            const noResults = document.getElementById('no-recetas');
+            
+            grid.innerHTML = '';
+            
+            if (recetas.length === 0) {
+                grid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            
+            recetas.forEach(receta => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 transform';
+                card.onclick = () => fetchRecetaDetalle(receta.idMeal);
+                
+                card.innerHTML = `
+                    <img 
+                        src="${receta.strMealThumb}" 
+                        alt="${receta.strMeal}"
+                        class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+                    >
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2 text-gray-800">${receta.strMeal}</h3>
+                        <div class="flex gap-2 flex-wrap">
+                            ${receta.strCategory ? `<span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">${receta.strCategory}</span>` : ''}
+                            ${receta.strArea ? `<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">${receta.strArea}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        async function fetchRecetaDetalle(id) {
+            showLoading();
+            hideError();
+            
+            try {
+                const response = await fetch(`${API_CONFIG.recetas}/recetas/${id}`);
+                const data = await response.json();
+                
+                if (data.meals && data.meals[0]) {
+                    showRecetaModal(data.meals[0]);
+                }
+            } catch (error) {
+                showError('Error al cargar detalle de receta');
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showRecetaModal(receta) {
+            const modal = document.getElementById('receta-modal');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+            
+            title.textContent = receta.strMeal;
+            
+            let ingredientes = '';
+            for (let i = 1; i <= 20; i++) {
+                const ingredient = receta[`strIngredient${i}`];
+                const measure = receta[`strMeasure${i}`];
+                
+                if (ingredient && ingredient.trim()) {
+                    ingredientes += `<li class="text-gray-700 py-1">• ${measure} ${ingredient}</li>`;
+                }
+            }
+            
+            content.innerHTML = `
+                <img 
+                    src="${receta.strMealThumb}" 
+                    alt="${receta.strMeal}"
+                    class="w-full h-64 object-cover rounded-lg shadow-md"
+                >
+                
+                <div class="flex gap-2 flex-wrap">
+                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">${receta.strCategory}</span>
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">${receta.strArea}</span>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-lg mb-3 text-gray-800">Ingredientes:</h3>
+                    <ul class="space-y-1">${ingredientes}</ul>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-lg mb-3 text-gray-800">Instrucciones:</h3>
+                    <p class="text-gray-700 whitespace-pre-line leading-relaxed">${receta.strInstructions}</p>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // ============================================
+        // API DE TRAINERS (NestJS)
+        // ============================================
+        async function fetchTrainers() {
+            showLoading();
+            hideError();
+            
+            try {
+                const response = await fetch(API_CONFIG.trainers);
+                trainers = await response.json();
+                renderTrainers();
+            } catch (error) {
+                showError('Error al cargar entrenadores. Verifica que la API NestJS esté en puerto 3000.');
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderTrainers() {
+            const grid = document.getElementById('trainers-grid');
+            const noResults = document.getElementById('no-trainers');
+            
+            grid.innerHTML = '';
+            
+            if (trainers.length === 0) {
+                grid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            
+            trainers.forEach(trainer => {
+                const card = document.createElement('div');
+                card.className = 'bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 transform';
+                
+                let teamHTML = '';
+                if (trainer.team && trainer.team.length > 0) {
+                    teamHTML = `
+                        <div class="mt-4">
+                            <p class="text-sm font-medium text-gray-600 mb-2">Equipo:</p>
+                            <div class="flex flex-wrap gap-2">
+                                ${trainer.team.map(pokemon => `
+                                    <span class="px-3 py-1 bg-gradient-to-r from-yellow-200 to-yellow-300 text-yellow-900 rounded-full text-sm font-semibold capitalize shadow-sm">
+                                        ${pokemon}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-semibold text-lg text-gray-800">${trainer.name}</h3>
+                        <button
+                            onclick="deleteTrainer('${trainer.id}')"
+                            class="text-red-500 hover:text-red-700 transition-colors duration-200 focus:outline-none p-1 rounded hover:bg-red-50"
+                        >
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    ${teamHTML}
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            lucide.createIcons();
+        }
+
+        async function createTrainer() {
+            hideError();
+            
+            const name = document.getElementById('trainer-name').value.trim();
+            const teamInput = document.getElementById('trainer-team').value.trim();
+            
+            if (!name) {
+                showError('El nombre del entrenador es requerido');
+                return;
+            }
+            
+            if (name.length < 3) {
+                showError('El nombre debe tener al menos 3 caracteres');
+                return;
+            }
+            
+            const team = teamInput ? teamInput.split(',').map(p => p.trim()).filter(p => p) : [];
+            
+            try {
+                const response = await fetch(API_CONFIG.trainers, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name, team })
+                });
+                
+                if (response.ok) {
+                    document.getElementById('trainer-name').value = '';
+                    document.getElementById('trainer-team').value = '';
+                    fetchTrainers();
+                } else {
+                    const errorData = await response.json();
+                    showError(errorData.message || 'Error al crear entrenador');
+                }
+            } catch (error) {
+                showError('Error al crear entrenador');
+                console.error('Error:', error);
+            }
+        }
+
+        async function deleteTrainer(id) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este entrenador?')) {
+                return;
+            }
+            
+            hideError();
+            
+            try {
+                const response = await fetch(`${API_CONFIG.trainers}/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    fetchTrainers();
+                } else {
+                    showError('Error al eliminar entrenador');
+                }
+            } catch (error) {
+                showError('Error al eliminar entrenador');
+                console.error('Error:', error);
+            }
+        }
+
+        // ============================================
+        // API DE GHIBLI (FastAPI)
+        // ============================================
+        async function fetchGhibli() {
+            showLoading();
+            hideError();
+            
+            try {
+                const searchTerm = document.getElementById('ghibli-search').value;
+                const url = searchTerm 
+                    ? `${API_CONFIG.ghibli}/films/search/?q=${searchTerm}`
+                    : `${API_CONFIG.ghibli}/films`;
+                
+                const response = await fetch(url);
+                ghibliFilms = await response.json();
+                
+                renderGhibli();
+            } catch (error) {
+                showError('Error al cargar películas. Verifica que FastAPI esté en puerto 3003.');
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderGhibli() {
+            const grid = document.getElementById('ghibli-grid');
+            const noResults = document.getElementById('no-ghibli');
+            
+            grid.innerHTML = '';
+            
+            if (ghibliFilms.length === 0) {
+                grid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            
+            ghibliFilms.forEach(film => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 transform';
+                card.onclick = () => showGhibliModal(film);
+                
+                card.innerHTML = `
+                    <img 
+                        src="${film.image || 'https://via.placeholder.com/300x400?text=No+Image'}" 
+                        alt="${film.title}"
+                        class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+                    >
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2 text-gray-800">${film.title}</h3>
+                        <p class="text-sm text-gray-600 mb-2">${film.original_title}</p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">${film.release_date}</span>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium">⭐ ${film.rt_score}/100</span>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function showGhibliModal(film) {
+            const modal = document.getElementById('receta-modal');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+            
+            title.textContent = film.title;
+            
+            content.innerHTML = `
+                <img 
+                    src="${film.image || 'https://via.placeholder.com/600x400?text=No+Image'}" 
+                    alt="${film.title}"
+                    class="w-full h-64 object-cover rounded-lg shadow-md"
+                >
+                
+                <div class="flex gap-2 flex-wrap">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">${film.release_date}</span>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">⭐ ${film.rt_score}/100</span>
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">⏱ ${film.running_time} min</span>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-lg mb-2 text-gray-800">Título Original:</h3>
+                    <p class="text-gray-700">${film.original_title}</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-lg mb-2 text-gray-800">Director:</h3>
+                    <p class="text-gray-700">${film.director}</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-lg mb-2 text-gray-800">Productor:</h3>
+                    <p class="text-gray-700">${film.producer}</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-lg mb-3 text-gray-800">Descripción:</h3>
+                    <p class="text-gray-700 leading-relaxed">${film.description}</p>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('receta-modal').classList.add('hidden');
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            fetchRecetas();
+            
+            // Search input para recetas con debounce
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    fetchRecetas();
+                }, 500);
+            });
+            
+            // Search input para Ghibli con debounce
+            const ghibliSearch = document.getElementById('ghibli-search');
+            ghibliSearch.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    fetchGhibli();
+                }, 500);
+            });
+            
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            
+            // Cerrar modal al hacer clic fuera
+            const modal = document.getElementById('receta-modal');
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Tecla ESC para cerrar modal
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+            
+            // Enter en inputs de trainer
+            document.getElementById('trainer-name').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    createTrainer();
+                }
+            });
+            
+            document.getElementById('trainer-team').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    createTrainer();
+                }
+            });
+        });
+
+        // ============================================
+        // CORDOVA COMPATIBILITY
+        // ============================================
+        document.addEventListener('deviceready', function() {
+            console.log('Cordova está listo');
+            
+            if (typeof navigator.app !== 'undefined') {
+                navigator.app.overrideButton('backbutton', true);
+                document.addEventListener('backbutton', function(e) {
+                    e.preventDefault();
+                    
+                    const modal = document.getElementById('receta-modal');
+                    if (!modal.classList.contains('hidden')) {
+                        closeModal();
+                        return;
+                    }
+                    
+                    if (currentTab === 'trainers' || currentTab === 'ghibli') {
+                        switchTab('recetas');
+                        return;
+                    }
+                    
+                    navigator.app.exitApp();
+                }, false);
+            }
+        }, false);
+
+        // ============================================
+        // MANEJO DE ERRORES GLOBALES
+        // ============================================
+        window.addEventListener('error', function(e) {
+            console.error('Error global:', e.error);
+            showError('Ha ocurrido un error inesperado');
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Promise rechazada:', e.reason);
+            showError('Error de conexión con el servidor');
+        });
     </script>
 </body>
 </html>
