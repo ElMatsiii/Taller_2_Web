@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; media-src *; img-src 'self' data: content: https:; connect-src *;">
+    <title>InfoMóvil - Taller 2</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+    
+    <style>
+        /* Solo animaciones necesarias que Tailwind no incluye por defecto */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Personalización de scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    
+    <!-- Header -->
+    <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold">InfoMóvil</h1>
+                
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-btn" class="md:hidden focus:outline-none">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+
+                <!-- Desktop navigation -->
+                <nav id="desktop-nav" class="hidden md:flex gap-4">
+                    <button onclick="switchTab('recetas')" id="tab-recetas" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-indigo-700">
+                        <i data-lucide="chef-hat" class="w-5 h-5"></i>
+                        Recetas
+                    </button>
+                    <button onclick="switchTab('trainers')" id="tab-trainers" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg transition-colors hover:bg-indigo-500">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        Entrenadores
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Mobile navigation -->
+            <nav id="mobile-nav" class="hidden md:hidden mt-4 space-y-2">
+                <button onclick="switchTab('recetas'); toggleMobileMenu();" class="tab-btn-mobile w-full flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-indigo-700">
+                    <i data-lucide="chef-hat" class="w-5 h-5"></i>
+                    Recetas
+                </button>
+                <button onclick="switchTab('trainers'); toggleMobileMenu();" class="tab-btn-mobile w-full flex items-center gap-2 px-4 py-2 rounded-lg transition-colors hover:bg-indigo-500">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    Entrenadores
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        
+        <!-- Error Alert -->
+        <div id="error-alert" class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded transition-all duration-300">
+            <div class="flex items-center">
+                <i data-lucide="alert-circle" class="text-red-500 mr-2 w-5 h-5"></i>
+                <p id="error-message" class="text-red-700 text-sm"></p>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="hidden flex justify-center items-center py-8">
+            <i data-lucide="loader-2" class="animate-spin text-indigo-600 w-8 h-8"></i>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SECCIÓN DE RECETAS -->
+        <!-- ============================================ -->
+        <div id="recetas-view" class="space-y-4">
+            
+            <!-- Buscador -->
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none"></i>
+                <input 
+                    type="text" 
+                    id="search-input"
+                    placeholder="Buscar recetas..."
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all duration-200"
+                >
+            </div>
+
+            <!-- Grid de Recetas -->
+            <div id="recetas-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Las recetas se cargarán aquí dinámicamente -->
+            </div>
+
+            <!-- Mensaje sin resultados -->
+            <div id="no-recetas" class="hidden text-center py-8 text-gray-500">
+                No se encontraron recetas
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SECCIÓN DE ENTRENADORES -->
+        <!-- ============================================ -->
+        <div id="trainers-view" class="hidden space-y-6">
+            
+            <!-- Formulario para crear entrenador -->
+            <div class="bg-white rounded-lg shadow-md p-6 transition-shadow duration-300 hover:shadow-xl">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">Nuevo Entrenador</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Nombre
+                        </label>
+                        <input
+                            type="text"
+                            id="trainer-name"
+                            placeholder="Ash Ketchum"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all duration-200"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Equipo (separado por comas)
+                        </label>
+                        <input
+                            type="text"
+                            id="trainer-team"
+                            placeholder="pikachu, charizard, bulbasaur"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all duration-200"
+                        >
+                    </div>
+                    
+                    <button
+                        onclick="createTrainer()"
+                        class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                        Crear Entrenador
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid de Entrenadores -->
+            <div id="trainers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Los entrenadores se cargarán aquí dinámicamente -->
+            </div>
+
+            <!-- Mensaje sin entrenadores -->
+            <div id="no-trainers" class="hidden text-center py-8 text-gray-500">
+                No hay entrenadores registrados
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal para Detalle de Receta -->
+    <div id="receta-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-filter backdrop-blur-sm">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300">
+            <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
+                <h2 id="modal-title" class="text-xl font-bold text-gray-800"></h2>
+                <button onclick="closeRecetaModal()" class="text-gray-500 hover:text-gray-700 focus:outline-none transition-colors duration-200">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div id="modal-content" class="p-6 space-y-4">
+                <!-- El contenido se cargará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm">Taller Nº2 - Intro. a Web Móvil | Grupo 10</p>
+            <p class="text-xs text-gray-400 mt-2">
+                Express API (Puerto 3002) | NestJS API (Puerto 3000)
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+    <script>
+        // Inicializar los iconos de Lucide
+        lucide.createIcons();
+    </script>
+</body>
+</html>
