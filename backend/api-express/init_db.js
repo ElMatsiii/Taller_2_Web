@@ -1,26 +1,15 @@
-// api_express/init_db.js
-//
-// Este script se ejecuta UNA SOLA VEZ para crear y poblar
-// la base de datos 'recetas.db' con datos de ejemplo.
-//
-// Ejecútalo con: node init_db.js
-// ----------------------------------------------------
-
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 
-// Definimos el SQL completo (CREATE e INSERT)
-// Hecho en una sola cadena para 'exec'
 const SQL_INIT = `
--- Borramos las tablas si ya existen (para poder re-ejecutar)
 DROP TABLE IF EXISTS ingredientes;
 DROP TABLE IF EXISTS recetas;
 DROP TABLE IF EXISTS idx_recetas_nombre;
 DROP TABLE IF EXISTS idx_ingredientes_receta;
 
--- 1. CREAR TABLA RECETAS (Sintaxis SQLite)
+
 CREATE TABLE recetas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, -- <- CAMBIO: SERIAL a INTEGER...
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
     nombre TEXT NOT NULL,
     categoria TEXT,
     area TEXT,
@@ -30,7 +19,6 @@ CREATE TABLE recetas (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. CREAR TABLA INGREDIENTES (Sintaxis SQLite)
 CREATE TABLE ingredientes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     receta_id INTEGER REFERENCES recetas(id) ON DELETE CASCADE,
@@ -38,7 +26,7 @@ CREATE TABLE ingredientes (
     medida TEXT
 );
 
--- 3. INSERTAR RECETAS (Sin cambios, SQLite es flexible)
+
 INSERT INTO recetas (nombre, categoria, area, imagen_url, instrucciones) VALUES
 ('Spaghetti Carbonara', 'Pasta', 'Italian', 
  'https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg',
@@ -52,7 +40,6 @@ INSERT INTO recetas (nombre, categoria, area, imagen_url, instrucciones) VALUES
  'https://www.themealdb.com/images/media/meals/wvtsxu1548070488.jpg',
  'Remojar los fideos de arroz en agua tibia. Saltear ajo y proteína elegida. Agregar fideos, salsa de tamarindo, salsa de pescado y azúcar. Añadir huevo y mezclar. Servir con brotes de soja, cacahuetes y lima.');
 
--- 4. INSERTAR INGREDIENTES (Usamos (SELECT id FROM recetas...))
 INSERT INTO ingredientes (receta_id, ingrediente, medida) VALUES
 ((SELECT id FROM recetas WHERE nombre = 'Spaghetti Carbonara'), 'Spaghetti', '400g'),
 ((SELECT id FROM recetas WHERE nombre = 'Spaghetti Carbonara'), 'Bacon', '200g'),
@@ -72,12 +59,11 @@ INSERT INTO ingredientes (receta_id, ingrediente, medida) VALUES
 ((SELECT id FROM recetas WHERE nombre = 'Pad Thai'), 'Cacahuetes', '50g'),
 ((SELECT id FROM recetas WHERE nombre = 'Pad Thai'), 'Salsa de pescado', '3 cucharadas');
 
--- 5. CREAR ÍNDICES (Sin cambios)
+
 CREATE INDEX idx_recetas_nombre ON recetas(nombre);
 CREATE INDEX idx_ingredientes_receta ON ingredientes(receta_id);
 `;
 
-// Función asíncrona para ejecutar el script
 async function initializeDatabase() {
     try {
         console.log("Conectando a la base de datos 'recetas.db'...");
@@ -87,7 +73,6 @@ async function initializeDatabase() {
         });
 
         console.log("Ejecutando script de inicialización SQL...");
-        // db.exec() permite ejecutar múltiples sentencias SQL a la vez
         await db.exec(SQL_INIT);
 
         console.log("Base de datos 'recetas.db' creada y poblada exitosamente.");
@@ -97,5 +82,4 @@ async function initializeDatabase() {
     }
 }
 
-// Ejecutar la función
 initializeDatabase();

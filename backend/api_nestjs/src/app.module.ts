@@ -15,7 +15,7 @@ import { TrainersModule } from './trainers/trainers.module';
         }),
 
         TrainersModule,
-        // ---------------------------------
+        
     ],
     controllers: [AppController],
     providers: [AppService],

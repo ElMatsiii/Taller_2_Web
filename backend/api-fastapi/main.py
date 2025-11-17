@@ -1,23 +1,16 @@
-# api-fastapi/main.py
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-import sqlite3 # <-- CAMBIO: Importamos sqlite3 en lugar de psycopg2
+import sqlite3
 import os
 from decimal import Decimal
-
-# ============================================
-# Configuración de la aplicación
-# ============================================
-
 app = FastAPI(
     title="API de Películas Ghibli (con SQLite)",
     description="API REST con FastAPI y SQLite",
     version="1.0.0"
 )
 
-# Configurar CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,29 +19,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ============================================
-# Configuración de Base de Datos
-# ============================================
-
-# <-- CAMBIO: La configuración ahora es solo el nombre del archivo
 DB_FILE = os.getenv('DB_FILE', './ghibli.db')
 
 def get_db_connection():
     """Crear conexión a la base de datos"""
     try:
-        # <-- CAMBIO: Conectamos a SQLite
         conn = sqlite3.connect(DB_FILE)
-        # <-- CAMBIO: Esto es CRUCIAL. Hace que sqlite3 devuelva dicts
-        # en lugar de tuplas, igual que hacía RealDictCursor.
         conn.row_factory = sqlite3.Row
         return conn
     except Exception as e:
         print(f"Error al conectar a la base de datos: {e}")
         raise
-
-# ============================================
-# Modelos Pydantic (Sin cambios)
-# ============================================
 
 class Pelicula(BaseModel):
     id: str
@@ -77,11 +58,7 @@ class PeliculaResponse(BaseModel):
     image: Optional[str]
     rt_score: Optional[str]
 
-# ============================================
-# Funciones auxiliares
-# ============================================
-
-def format_pelicula(row: sqlite3.Row) -> dict: # <-- CAMBIO: El tipo ahora es sqlite3.Row
+def format_pelicula(row: sqlite3.Row) -> dict:
     """Formatear película al formato de la API original de Ghibli"""
     return {
         "id": row['id'],
@@ -95,10 +72,6 @@ def format_pelicula(row: sqlite3.Row) -> dict: # <-- CAMBIO: El tipo ahora es sq
         "image": row['imagen_url'] or '',
         "rt_score": str(int(row['calificacion'] * 10)) if row['calificacion'] else '0'
     }
-
-# ============================================
-# Endpoints
-# ============================================
 
 @app.get("/")
 async def root():
@@ -135,13 +108,13 @@ async def get_films(
 
         params = []
         if limit:
-            query += f" LIMIT ?" # <-- CAMBIO: Placeholder '?'
+            query += f" LIMIT ?"
             params.append(limit)
         if offset:
-            query += f" OFFSET ?" # <-- CAMBIO: Placeholder '?'
+            query += f" OFFSET ?"
             params.append(offset)
 
-        cur.execute(query, tuple(params)) # <-- CAMBIO: Pasar parámetros
+        cur.execute(query, tuple(params))
         rows = cur.fetchall()
 
         cur.close()
@@ -160,14 +133,12 @@ async def get_film(film_id: str):
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-
-        # <-- CAMBIO: Placeholder '?' en lugar de '%s'
         cur.execute("""
             SELECT id, titulo, titulo_original, director, productor,
                    anio_lanzamiento, duracion, descripcion, imagen_url, calificacion
             FROM peliculas
             WHERE id = ?
-        """, (film_id,)) # <-- CAMBIO: Parámetros como tupla
+        """, (film_id,))
 
         row = cur.fetchone()
 
@@ -179,7 +150,7 @@ async def get_film(film_id: str):
 
         return format_pelicula(row)
 
-    except sqlite3.Error as e: # <-- CAMBIO: Capturar error de sqlite3
+    except sqlite3.Error as e:
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
 
 @app.get("/films/search/", response_model=List[PeliculaResponse])
@@ -191,7 +162,6 @@ async def search_films(q: str = Query(..., description="Término de búsqueda"))
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # <-- CAMBIO: Placeholder '?'
         cur.execute("""
             SELECT id, titulo, titulo_original, director, productor,
                    anio_lanzamiento, duracion, descripcion, imagen_url, calificacion
@@ -199,7 +169,7 @@ async def search_films(q: str = Query(..., description="Término de búsqueda"))
             WHERE LOWER(titulo) LIKE LOWER(?)
                OR LOWER(titulo_original) LIKE LOWER(?)
             ORDER BY anio_lanzamiento DESC
-        """, (f'%{q}%', f'%{q}%')) # <-- CAMBIO: Parámetros como tupla
+        """, (f'%{q}%', f'%{q}%'))
 
         rows = cur.fetchall()
 
@@ -220,7 +190,6 @@ async def create_film(pelicula: Pelicula):
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # <-- CAMBIO: Placeholders '?'
         cur.execute("""
             INSERT INTO peliculas (id, titulo, titulo_original, director, productor,
                                  anio_lanzamiento, duracion, descripcion, imagen_url, calificacion)
@@ -238,7 +207,6 @@ async def create_film(pelicula: Pelicula):
             pelicula.calificacion
         ))
 
-        # <-- CAMBIO: Obtener el ID del insert
         new_id = cur.lastrowid
         conn.commit()
 
@@ -248,12 +216,8 @@ async def create_film(pelicula: Pelicula):
         return {"message": "Película creada exitosamente", "id": new_id}
 
     except Exception as e:
-        conn.rollback() # <-- CAMBIO: Asegurar rollback
+        conn.rollback()
         raise HTTPException(status_code=500, detail=f"Error al crear película: {str(e)}")
-
-# ============================================
-# Health Check
-# ============================================
 
 @app.get("/health")
 async def health_check():
@@ -277,7 +241,3 @@ async def health_check():
             "database": "disconnected",
             "error": str(e)
         }
-
-# ============================================
-# Ejecutar con: uvicorn main:app --reload --port 3003
-# ============================================

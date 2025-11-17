@@ -1,26 +1,14 @@
-// ============================================
-// CONFIGURACIÓN DE APIs
-// ============================================
 
 const API_CONFIG = {
     recetas: 'http://localhost:3002/api',
     trainers: 'http://localhost:3000/trainers',
-    // Agregar aquí la URL de FastAPI cuando esté lista
-    // fastapi: 'http://localhost:8000/api'
-};
 
-// ============================================
-// ESTADO GLOBAL DE LA APLICACIÓN
-// ============================================
+};
 
 let currentTab = 'recetas';
 let recetas = [];
 let trainers = [];
 let searchTimeout = null;
-
-// ============================================
-// FUNCIONES DE UTILIDAD
-// ============================================
 
 function showError(message) {
     const errorAlert = document.getElementById('error-alert');
@@ -28,10 +16,8 @@ function showError(message) {
     errorMessage.textContent = message;
     errorAlert.classList.remove('hidden');
     
-    // Actualizar iconos
     lucide.createIcons();
     
-    // Auto-ocultar después de 5 segundos
     setTimeout(() => {
         hideError();
     }, 5000);
@@ -57,23 +43,17 @@ function toggleMobileMenu() {
     
     mobileNav.classList.toggle('hidden');
     
-    // Actualizar iconos
     lucide.createIcons();
 }
 
-// ============================================
-// FUNCIONES DE NAVEGACIÓN
-// ============================================
 
 function switchTab(tabName) {
     currentTab = tabName;
     hideError();
-    
-    // Ocultar todas las vistas
+
     document.getElementById('recetas-view').classList.add('hidden');
     document.getElementById('trainers-view').classList.add('hidden');
     
-    // Mostrar la vista seleccionada
     if (tabName === 'recetas') {
         document.getElementById('recetas-view').classList.remove('hidden');
         fetchRecetas();
@@ -82,7 +62,6 @@ function switchTab(tabName) {
         fetchTrainers();
     }
     
-    // Actualizar estilos de tabs (desktop)
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('bg-indigo-700');
         btn.classList.add('hover:bg-indigo-500');
@@ -90,16 +69,11 @@ function switchTab(tabName) {
     document.getElementById(`tab-${tabName}`).classList.add('bg-indigo-700');
     document.getElementById(`tab-${tabName}`).classList.remove('hover:bg-indigo-500');
     
-    // Actualizar estilos de tabs (mobile)
     document.querySelectorAll('.tab-btn-mobile').forEach(btn => {
         btn.classList.remove('bg-indigo-700');
         btn.classList.add('hover:bg-indigo-500');
     });
 }
-
-// ============================================
-// FUNCIONES PARA API DE RECETAS (Express)
-// ============================================
 
 async function fetchRecetas() {
     showLoading();
@@ -197,7 +171,6 @@ function showRecetaModal(receta) {
     
     title.textContent = receta.strMeal;
     
-    // Construir lista de ingredientes
     let ingredientes = '';
     for (let i = 1; i <= 20; i++) {
         const ingredient = receta[`strIngredient${i}`];
@@ -239,7 +212,6 @@ function showRecetaModal(receta) {
     
     modal.classList.remove('hidden');
     
-    // Reinicializar iconos
     lucide.createIcons();
 }
 
@@ -248,9 +220,6 @@ function closeRecetaModal() {
     modal.classList.add('hidden');
 }
 
-// ============================================
-// FUNCIONES PARA API DE TRAINERS (NestJS)
-// ============================================
 
 async function fetchTrainers() {
     showLoading();
@@ -320,7 +289,6 @@ function renderTrainers() {
         grid.appendChild(card);
     });
     
-    // Reinicializar iconos
     lucide.createIcons();
 }
 
@@ -352,11 +320,9 @@ async function createTrainer() {
         });
         
         if (response.ok) {
-            // Limpiar formulario
             document.getElementById('trainer-name').value = '';
             document.getElementById('trainer-team').value = '';
             
-            // Recargar lista
             fetchTrainers();
         } else {
             const errorData = await response.json();
@@ -391,18 +357,11 @@ async function deleteTrainer(id) {
     }
 }
 
-// ============================================
-// EVENT LISTENERS
-// ============================================
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar iconos de Lucide
     lucide.createIcons();
-    
-    // Cargar recetas al inicio
+
     fetchRecetas();
     
-    // Search input con debounce
     const searchInput = document.getElementById('search-input');
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
@@ -411,11 +370,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     });
     
-    // Mobile menu toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     mobileMenuBtn.addEventListener('click', toggleMobileMenu);
     
-    // Cerrar modal al hacer clic fuera
     const modal = document.getElementById('receta-modal');
     modal.addEventListener('click', function(e) {
         if (e.target === modal) {
@@ -423,14 +380,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Tecla ESC para cerrar modal
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeRecetaModal();
         }
     });
     
-    // Enter en inputs de trainer
     document.getElementById('trainer-name').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             createTrainer();
@@ -444,44 +399,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// ============================================
-// CORDOVA COMPATIBILITY
-// ============================================
 
-// Esperar a que Cordova esté listo (si se ejecuta en Cordova)
 document.addEventListener('deviceready', function() {
     console.log('Cordova está listo');
-    
-    // Aquí puedes agregar funcionalidades específicas de Cordova
-    // como manejo del botón de retroceso de Android
+
     
     if (typeof navigator.app !== 'undefined') {
         navigator.app.overrideButton('backbutton', true);
         document.addEventListener('backbutton', function(e) {
             e.preventDefault();
             
-            // Si hay modal abierto, cerrarlo
+
             const modal = document.getElementById('receta-modal');
             if (!modal.classList.contains('hidden')) {
                 closeRecetaModal();
                 return;
             }
             
-            // Si estamos en trainers, volver a recetas
             if (currentTab === 'trainers') {
                 switchTab('recetas');
                 return;
             }
             
-            // Si estamos en recetas, salir de la app
             navigator.app.exitApp();
         }, false);
     }
 }, false);
 
-// ============================================
-// MANEJO DE ERRORES GLOBALES
-// ============================================
 
 window.addEventListener('error', function(e) {
     console.error('Error global:', e.error);

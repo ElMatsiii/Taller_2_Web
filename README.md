@@ -4,19 +4,19 @@ Intro. a Web Movil
 
 Este repositorio contiene el código fuente del backend para el Taller Nº 2. Consiste en tres APIs independientes, cada una con su propia base de datos SQLite, construidas para ser portables y cumplir con los requisitos del taller.
 
-🧑‍💻 Integrantes del Grupo
+Integrantes del Grupo
 
 Grupo Nº: [NÚMERO DE GRUPO]
 
-Integrante 1: [Nombre Apellido, RUT]
+Integrante 1: [Matias Gutierrez, 21.733.537-K]
 
-Integrante 2: [Nombre Apellido, RUT]
+Integrante 2: [Máximo Sazo, 21.654.236-3]
 
-Integrante 3: [Nombre Apellido, RUT]
+Integrante 3: [Daniela Infante, 21.446.602-3]
 
-Integrante 4: [Nombre Apellido, RUT]
+Integrante 4: [Maximiliano Pizarro, 21.776.433-5]
 
-🛠️ Arquitectura y Tecnologías
+Arquitectura y Tecnologías
 
 El backend está compuesto por 3 microservicios independientes. Para asegurar la portabilidad y facilidad de evaluación, todas las APIs han sido migradas de PostgreSQL a SQLite.
 
@@ -50,7 +50,7 @@ Base de Datos: SQLite (Archivo: db.sqlite)
 
 Puerto: http://localhost:3000
 
-🚀 Instrucciones de Instalación y Ejecución
+Instrucciones de Instalación y Ejecución
 
 Siga estos pasos para levantar el entorno de backend completo. Necesitará 3 terminales separadas.
 
@@ -84,7 +84,7 @@ node init_db.js
 npm start
 
 
-🍜 API de Recetas escuchando en http://localhost:3002
+API de Recetas escuchando en http://localhost:3002
 
 Terminal 2: API de Ghibli (FastAPI)
 
@@ -109,7 +109,7 @@ python init_db.py
 uvicorn main:app --reload
 
 
-🎬 API de Ghibli escuchando en http://localhost:8000
+API de Ghibli escuchando en http://localhost:8000
 
 Terminal 3: API de Entrenadores (NestJS)
 
@@ -127,9 +127,9 @@ node init_db.js
 npm run start:dev
 
 
-Ϟ API de Entrenadores escuchando en http://localhost:3000
+API de Entrenadores escuchando en http://localhost:3000
 
-3. ¡Probar las APIs!
+3. Probar las APIs
 
 Usa Postman o un cliente similar para probar los endpoints:
 

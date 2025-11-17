@@ -1,4 +1,4 @@
-// api_nestjs/src/trainers/dto/create-trainer.dto.ts
+
 
 import { IsString, IsNotEmpty, MinLength, IsArray, IsOptional } from 'class-validator';
 
@@ -9,7 +9,7 @@ export class CreateTrainerDto {
     name: string;
 
     @IsArray()
-    @IsString({ each: true }) // Valida que cada elemento del array sea un string
-    @IsOptional() // El equipo es opcional al crear
+    @IsString({ each: true }) 
+    @IsOptional() 
     team?: string[];
 }
