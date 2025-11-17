@@ -1,140 +1,164 @@
-Taller 2: Backend de 3 APIs
+# Taller 2: Backend de 3 APIs
 
-Intro. a Web Movil
+**Introducción a Web Móvil**
+
+---
+
+## Descripción del Proyecto
 
 Este repositorio contiene el código fuente del backend para el Taller Nº 2. Consiste en tres APIs independientes, cada una con su propia base de datos SQLite, construidas para ser portables y cumplir con los requisitos del taller.
 
-Integrantes del Grupo
+---
 
-Grupo Nº: [NÚMERO DE GRUPO]
+## Integrantes del Grupo
 
-Integrante 1: [Matias Gutierrez, 21.733.537-K]
+**Grupo Nº:** 10
 
-Integrante 2: [Máximo Sazo, 21.654.236-3]
+| Nombre | RUT |
+|--------|-----|
+| Matias Gutierrez | 21.733.537-K |
+| Máximo Sazo | 21.654.236-3 |
+| Daniela Infante | 21.446.602-3 |
+| Maximiliano Pizarro | 21.776.433-5 |
 
-Integrante 3: [Daniela Infante, 21.446.602-3]
+---
 
-Integrante 4: [Maximiliano Pizarro, 21.776.433-5]
-
-Arquitectura y Tecnologías
+## Arquitectura y Tecnologías
 
 El backend está compuesto por 3 microservicios independientes. Para asegurar la portabilidad y facilidad de evaluación, todas las APIs han sido migradas de PostgreSQL a SQLite.
 
-API de Recetas (Express + SQLite):
+### API de Recetas (Express + SQLite)
 
-Framework: Express.js
+- **Framework:** Express.js
+- **Lenguaje:** JavaScript (Node.js)
+- **Base de Datos:** SQLite (`recetas.db`)
+- **Puerto:** `http://localhost:3002`
 
-Lenguaje: JavaScript (Node.js)
+### API de Películas Ghibli (FastAPI + SQLite)
 
-Base de Datos: SQLite (Archivo: recetas.db)
+- **Framework:** FastAPI
+- **Lenguaje:** Python
+- **Base de Datos:** SQLite (`ghibli.db`)
+- **Puerto:** `http://localhost:3003`
 
-Puerto: http://localhost:3002
+### API de Entrenadores Pokémon (NestJS + SQLite)
 
-API de Películas Ghibli (FastAPI + SQLite):
+- **Framework:** NestJS
+- **Lenguaje:** TypeScript (Node.js)
+- **Base de Datos:** SQLite (`db.sqlite`)
+- **Puerto:** `http://localhost:3000`
 
-Framework: FastAPI
+---
 
-Lenguaje: Python
+## Instrucciones de Instalación y Ejecución
 
-Base de Datos: SQLite (Archivo: ghibli.db)
+Siga estos pasos para levantar el entorno de backend completo. **Necesitará 3 terminales separadas.**
 
-Puerto: http://localhost:8000 (por defecto de uvicorn)
+### Prerrequisitos
 
-API de Entrenadores Pokémon (NestJS + SQLite):
+- **Node.js:** v18 o superior (incluye npm)
+- **Python:** v3.8 o superior (incluye pip)
 
-Framework: NestJS
+---
 
-Lenguaje: TypeScript (Node.js)
+### 1. Clonar el Repositorio
 
-Base de Datos: SQLite (Archivo: db.sqlite)
-
-Puerto: http://localhost:3000
-
-Instrucciones de Instalación y Ejecución
-
-Siga estos pasos para levantar el entorno de backend completo. Necesitará 3 terminales separadas.
-
-Prerrequisitos
-
-Node.js: v18 o superior (incluye npm)
-
-Python: v3.8 o superior (incluye pip)
-
-1. Clonar el Repositorio
-
+```bash
 git clone [URL_DEL_REPOSITORIO]
 cd [NOMBRE_DEL_REPOSITORIO]
+```
 
+---
 
-2. Levantar el Backend (3 Terminales)
+### 2. Levantar el Backend
 
-Terminal 1: API de Recetas (Express)
+#### Terminal 1: API de Recetas (Express)
 
-# 1. Navegar a la carpeta
+```bash
+# Navegar a la carpeta
 cd backend/api_express
 
-# 2. Instalar dependencias
+# Instalar dependencias
 npm install
 
-# 3. Inicializar la base de datos (SOLO LA PRIMERA VEZ)
+# Inicializar la base de datos (SOLO LA PRIMERA VEZ)
 # Esto crea y puebla recetas.db
 node init_db.js
 
-# 4. Iniciar el servidor
+# Iniciar el servidor
 npm start
+```
 
+**Resultado:** API de Recetas escuchando en `http://localhost:3002`
 
-API de Recetas escuchando en http://localhost:3002
+---
 
-Terminal 2: API de Ghibli (FastAPI)
+#### Terminal 2: API de Ghibli (FastAPI)
 
-# 1. Navegar a la carpeta
+```bash
+# Navegar a la carpeta
 cd backend/api_fastapi
 
-# 2. Crear y activar un entorno virtual
+# Crear y activar un entorno virtual
 python -m venv venv
+
+# Activar el entorno virtual
 # En Windows (PowerShell):
 .\venv\Scripts\Activate.ps1
-# En macOS/Linux:
-# source venv/bin/activate
 
-# 3. Instalar dependencias de Python
+# En macOS/Linux:
+source venv/bin/activate
+
+# Instalar dependencias de Python
 pip install -r requirements.txt
 
-# 4. Inicializar la base de datos (SOLO LA PRIMERA VEZ)
+# Inicializar la base de datos (SOLO LA PRIMERA VEZ)
 # Esto crea y puebla ghibli.db
 python init_db.py
 
-# 5. Iniciar el servidor
-uvicorn main:app --reload
+# Iniciar el servidor
+uvicorn main:app --reload --port 3003
+```
 
+**Resultado:** API de Ghibli escuchando en `http://localhost:3003`
 
-API de Ghibli escuchando en http://localhost:8000
+---
 
-Terminal 3: API de Entrenadores (NestJS)
+#### Terminal 3: API de Entrenadores (NestJS)
 
-# 1. Navegar a la carpeta
+```bash
+# Navegar a la carpeta
 cd backend/api_nestjs
 
-# 2. Instalar dependencias
+# Instalar dependencias
 npm install
 
-# 3. Inicializar la base de datos (SOLO LA PRIMERA VEZ)
+# Inicializar la base de datos (SOLO LA PRIMERA VEZ)
 # Esto crea y puebla db.sqlite
 node init_db.js
 
-# 4. Iniciar el servidor en modo desarrollo (watch)
-npm run start:dev
+# Iniciar el servidor en modo desarrollo
+npm run start
+```
 
+**Resultado:** API de Entrenadores escuchando en `http://localhost:3000`
 
-API de Entrenadores escuchando en http://localhost:3000
+---
 
-3. Probar las APIs
+### 3. Probar las APIs
 
-Usa Postman o un cliente similar para probar los endpoints:
+Utilice Postman o un cliente HTTP similar para probar los siguientes endpoints:
 
-Recetas: GET http://localhost:3002/api/recetas
+| API | Endpoint | URL |
+|-----|----------|-----|
+| Recetas | GET | `http://localhost:3002/api/recetas` |
+| Ghibli | GET | `http://localhost:3003/films` |
+| Entrenadores | GET | `http://localhost:3000/trainers` |
 
-Ghibli: GET http://localhost:8000/films
+---
 
-Entrenadores: GET http://localhost:3000/trainers
+## Notas Importantes
+
+- Los scripts de inicialización de base de datos (`init_db.js` / `init_db.py`) deben ejecutarse **solo la primera vez** que se levanta cada API.
+- Asegúrese de tener los puertos 3000, 3002 y 8000 disponibles antes de iniciar los servicios.
+- Cada API es completamente independiente y puede ejecutarse por separado si es necesario.
